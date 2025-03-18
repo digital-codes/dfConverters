@@ -1,0 +1,36 @@
+{
+  "name": "dfconverters",
+  "version": "0.1.0",
+  "description": "Converters for dflib dataframe library",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "clean": "rm -rf dist",
+    "doc": "npx typedoc --options typedoc.json",
+    "start": "node dist/index.js",
+    "prepare": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tensorflow/tfjs-node": "^4.22.0",
+    "@types/jest": "^29.5.14",
+    "@vitest/browser": "^2.1.5",
+    "happy-dom": "^15.11.6",
+    "jsdom": "^25.0.1",
+    "typedoc": "^0.28.0",
+    "typedoc-plugin-markdown": "^4.4.1",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5",
+    "webdriverio": "^9.2.14"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
+    "dflib": "github:digital-codes/dflib"
+  }
+}
