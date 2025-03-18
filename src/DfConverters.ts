@@ -88,99 +88,63 @@ export class tfConverters {
     });
   }
 
+  /*
   /**
    * Converts an image Blob (PNG or JPG) to a 3D tf.Tensor.
    * @param blob - The image Blob to convert.
    * @returns A Promise that resolves to a 3D tf.Tensor of shape [height, width, 3].
    */
-  static async fromImageBlob(blob: Blob): Promise<tf.Tensor3D> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const url = URL.createObjectURL(blob);
+  static async fromImageBlob(blob: Blob, useRGBA: boolean = false): Promise<tf.Tensor3D> {
+    const img = new Image();
+    const url = URL.createObjectURL(blob);
 
+    return new Promise<tf.Tensor3D>((resolve, reject) => {
       img.onload = () => {
-        console.log("fromImageBlob onload");
-        console.log("url", url);
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        console.log("canvas", canvas);
-        const ctx = canvas.getContext('2d');
+        URL.revokeObjectURL(url); // Cleanup object URL
+
+        const { width, height } = img;
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+
         if (!ctx) {
-          reject(new Error('Unable to get canvas context'));
-          URL.revokeObjectURL(url);
+          reject(new Error("Unable to get canvas context"));
           return;
         }
 
         ctx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = new Float32Array(imageData.data.length/4*3);  // make rgb vector
-        for (let i = 0, j = 0; i < imageData.data.length; i += 4) {
-          data[j++] = imageData.data[i] / 255;     // R
-          data[j++] = imageData.data[i + 1] / 255; // G
-          data[j++] = imageData.data[i + 2] / 255; // B
+        const imageData = ctx.getImageData(0, 0, width, height);
+        const pixels = imageData.data;
+
+        const numChannels = useRGBA ? 4 : 3;
+        const data = new Float32Array((pixels.length / 4) * numChannels);
+
+        let j = 0;
+        for (let i = 0; i < pixels.length; i += 4) {
+          data[j++] = pixels[i] / 255;     // R
+          data[j++] = pixels[i + 1] / 255; // G
+          data[j++] = pixels[i + 2] / 255; // B
+          if (useRGBA) {
+            data[j++] = pixels[i + 3] / 255; // A (optional)
+          }
         }
-        console.log("array data", data);
+
         try {
-          const tensor = tf.tensor3d(data, [canvas.height, canvas.width, 3]);
-          console.log("tensor", tensor);
+          const tensor = tf.tensor3d(data, [height, width, numChannels]);
           resolve(tensor);
-        }
-        catch (error) {
-          console.log("tensor failed");
+        } catch (error) {
           reject(error);
         }
       };
 
-      img.onerror = (error) => {
-        reject(new Error(`Image failed to load: ${error}`));
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("Image loading failed"));
       };
 
       img.src = url;
-      //setTimeout(img.onload, 100);
     });
   }
 
-  /*
-  static fromImageBlob(blob: Blob): Promise<tf.Tensor3D> {
-    return new Promise((resolve, reject) => {
-      console.log("blob from image", blob);
-      const img = new Image();
-      const url = URL.createObjectURL(blob);
-      console.log("url", url);
-      img.onload = () => {
-        console.log("onload");
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        console.log("ctx", ctx);
-        if (!ctx) {
-          reject(new Error('Unable to get canvas context'));
-          return;
-        }
-
-        ctx.drawImage(img, 0, 0);
-        const imageData = ctx.getImageData(0, 0, img.width, img.height);
-        const { data, width, height } = imageData;
-
-        const tensor = tf.tensor(Array.from(data), [height, width, 4], 'int32')
-          .slice([0, 0, 0], [height, width, 3])
-          .div(255);
-        
-        URL.revokeObjectURL(url);
-        resolve(tensor as tf.Tensor3D);
-      };
-
-      img.onerror = (error) => {
-        URL.revokeObjectURL(url);
-        reject(error);
-      };
-
-      img.src = url;
-      img.onload()
-    });
-  }
-  */
 }
