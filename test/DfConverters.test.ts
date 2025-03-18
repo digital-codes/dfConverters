@@ -86,6 +86,8 @@ describe('tfConverters', () => {
       };
 
       const blob = createRedImageBlob();
+      expect(blob).toBeInstanceOf(Blob);
+      expect(blob.type).toBe('image/png');
       // const blob = tImg as Blob
 
       //console.log("blob2", await blob.arrayBuffer());

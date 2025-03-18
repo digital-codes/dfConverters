@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import DataFrame  from 'dflib'; // Assuming DataFrame is implemented elsewhere
+import DataFrame from 'dflib'; // Assuming DataFrame is implemented elsewhere
 
 export class tfConverters {
   /**
@@ -97,12 +97,10 @@ export class tfConverters {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const url = URL.createObjectURL(blob);
-  
+
       img.onload = () => {
-        console.log("onload");
+        console.log("fromImageBlob onload");
         console.log("url", url);
-        console.log("blob4from", blob);
-        URL.revokeObjectURL(url);
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
@@ -110,25 +108,37 @@ export class tfConverters {
         const ctx = canvas.getContext('2d');
         if (!ctx) {
           reject(new Error('Unable to get canvas context'));
+          URL.revokeObjectURL(url);
           return;
         }
-  
+
         ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = new Float32Array(imageData.data.length / 4);
-        console.log("data", data);
-        for (let i = 0; i < data.length; i++) {
-          data[i] = imageData.data[i * 4] / 255; // Normalize red channel
+        const data = new Float32Array(imageData.data.length/4*3);  // make rgb vector
+        for (let i = 0, j = 0; i < imageData.data.length; i += 4) {
+          data[j++] = imageData.data[i] / 255;     // R
+          data[j++] = imageData.data[i + 1] / 255; // G
+          data[j++] = imageData.data[i + 2] / 255; // B
         }
-        resolve(tf.tensor3d(data, [canvas.height, canvas.width, 1]));
+        console.log("array data", data);
+        try {
+          const tensor = tf.tensor3d(data, [canvas.height, canvas.width, 3]);
+          console.log("tensor", tensor);
+          resolve(tensor);
+        }
+        catch (error) {
+          console.log("tensor failed");
+          reject(error);
+        }
       };
-  
+
       img.onerror = (error) => {
         reject(new Error(`Image failed to load: ${error}`));
       };
-  
+
       img.src = url;
-      setTimeout(img.onload, 100);
+      //setTimeout(img.onload, 100);
     });
   }
 
