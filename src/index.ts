@@ -1,4 +1,4 @@
 // src/index.ts
 import { tfConverters } from './DfConverters';
 
-export default { tfConverters };
+export default tfConverters;
