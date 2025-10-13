@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import DataFrame from 'dflib'; // Assuming DataFrame is implemented elsewhere
+import DataFrame from 'dflib'; // Assuming that DataFrame is implemented elsewhere
 
 export class tfConverters {
   /**
