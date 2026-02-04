@@ -21,13 +21,13 @@
     "@tensorflow/tfjs-node": "^4.22.0",
     "@types/jest": "^30.0.0",
     "@vitest/browser": "^3.2.4",
-    "happy-dom": "^20.0.2",
-    "jsdom": "^27.0.0",
-    "typedoc": "^0.28.13",
+    "happy-dom": "^20.5.0",
+    "jsdom": "^27.4.0",
+    "typedoc": "^0.28.16",
     "typedoc-plugin-markdown": "^4.9.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4",
-    "webdriverio": "^9.20.0"
+    "webdriverio": "^9.23.3"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.22.0",
