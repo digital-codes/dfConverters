@@ -19,13 +19,13 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@vitest/browser": "^5.0.2",
-    "@vitest/browser-webdriverio": "^5.0.0",
     "happy-dom": "^20.14.5",
     "jsdom": "^27.4.0",
     "typedoc": "^0.28.20",
     "typedoc-plugin-markdown": "^4.13.1",
     "typescript": "^5.9.3",
+    "@vitest/browser": "^5.0.2",
+    "@vitest/browser-webdriverio": "^5.0.0",
     "vitest": "^5.0.2"
   },
   "dependencies": {
